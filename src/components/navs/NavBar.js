@@ -8,8 +8,8 @@ import linearIndeterminate from '../loaders/linear-indeterminate';
 
 const NavBar = (props) => {
     const { classes } = props;
-    console.log('classes:', classes);
-    console.log('props:', props);
+    // console.log('classes:', classes);
+    // console.log('props:', props);
     return (
         <AppBar position="fixed" className={classes.appBar}>
             <Toolbar>

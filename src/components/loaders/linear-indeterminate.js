@@ -3,16 +3,21 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-const styles = {
+const styles = theme => ({
   root: {
-    flexGrow: 1,
+    display: 'flex',
   },
-};
+  loader: {
+    zIndex: theme.zIndex.drawer + 2,
+    marginTop: 100,
+  },
+
+});
 
 function LinearIndeterminate(props) {
   const { classes } = props;
   return (
-    <div className={classes.root}>
+    <div className={styles.loader}>
       <LinearProgress color="secondary"/>
     </div>
   );

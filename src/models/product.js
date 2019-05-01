@@ -10,5 +10,6 @@ export class Product {
         this.subscriptions = i.relationships.field_subscriptions.data.map(s=>{return s.id});
         this.notices = i.relationships.field_related_notices.data.map(n=>{return n.id});
         this.diskImages = i.relationships.field_disk_images.data.map(di=>{return di.id})
+        this.weight = i.attributes.weight;
     }
 }

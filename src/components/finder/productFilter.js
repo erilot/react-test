@@ -1,8 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
 import * as _ from 'lodash';
-import ProductCard from '../atomic/ProductCard';
+import { List, ListItem, ListItemText, Fade } from '@material-ui/core';
 
 const styles = theme => ({
     root: {
@@ -12,28 +11,27 @@ const styles = theme => ({
 });
 
 function ProductFilter(props) {
-    const { classes, products } = props;
-    const productList = [];
-    // Build subscription list
-    _.forEach( products.products, (product, i) => {
-        productList.push(
-            <Grid maxwidth={10} key={i} item xs={12} sm={3} >
-                <ProductCard product={product} resolveProduct={products.resolveProduct}/>
-            </Grid>);
-    });
-    
-    // Return JSX
-    return (
-        <div className={classes.root}>
-                <Grid item xs={12} className={classes.row}>
-                    <Grid container justify="center" spacing={24}>
-                        {productList}
+    const { products, selected, setProduct } = props;
+    const selectedSubscription = selected.subscription ? selected.subscription.id : null;
 
-                    </Grid>
-                </Grid>
-        </div>
-    );
+
+    const filteredProducts = selectedSubscription ? _.filter(products, product => {
+        return _.find(product.subscriptions, s => { return s === selectedSubscription });
+    }) : products;
+
+
+    return (filteredProducts && <List>
+        {filteredProducts.map((product, index) => (
+            <Fade in={true} key={product.id}>
+                <ListItem button key={product.id}
+                    onClick={(e, x) => { setProduct(e, product.id) }}
+                >
+                    <ListItemText primary={product.title} />
+                </ListItem>
+            </Fade>
+        ))}
+    </List>
+    )
 }
-
 
 export default withStyles(styles)(ProductFilter);

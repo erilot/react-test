@@ -1,48 +1,56 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
-import SubscriptionCard from '../atomic/SubscriptionCard';
-import * as _ from 'lodash';
+import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { FormHelperText } from '@material-ui/core';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
-        flexgrow: 1,
-        borderBottom: '1px solid #ccc',
-        marginBottom: 25,
+        display: 'flex',
+        flexWrap: 'wrap',
     },
-    row: {
-
-    }
-});
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        width: '100%',
+        padding: theme.spacing(3)
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(1),
+    },
+}));
 
 function SubscriptionFilter(props) {
-    const { classes, subscriptions } = props;
-    console.log('subscriptions in filter:',subscriptions.subscriptions);
-    const subscriptionList = [];
-    // Build subscription list
-    _.forEach( subscriptions.subscriptions, (sub, i) => {
-        subscriptionList.push(
-            <Grid maxwidth={10} key={i} item xs={12} sm={3} >
-                <SubscriptionCard 
-                    subscription={sub} 
-                    resolveSubscription={subscriptions.resolveSubscription} 
-                    selectedSubscription={subscriptions.selectedSubscription}
-                    />
-            </Grid>);
-    });
-    
-    // Return JSX
-    return (
-        <div className={classes.root}>
-                <Grid item xs={12} className={classes.row}>
-                    <Grid container justify="center" spacing={24}>
-                        {subscriptionList}
+    const { subscriptions, selected, setSubscription } = props;
+    const classes = useStyles();
 
-                    </Grid>
-                </Grid>
-        </div>
+    const subOptions = subscriptions.map(sub => {
+        return <MenuItem key={sub.id} value={sub.id}>{sub.title}</MenuItem>
+    });
+
+    return (
+        <form className={classes.root}>
+            <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="filter-subscription">Filter by subscription</InputLabel>
+                <Select
+                    inputProps={{
+                        value: selected.id || '',
+                        // name:'filter-subscription'
+                    }}
+                    value={selected ? selected.id : ""}
+                    onChange={(e,x)=>{setSubscription(e, x.props.value)}}
+                >
+                    <MenuItem key={-1} value={0}>
+                        <em>None</em>
+                    </MenuItem>
+                    {subOptions}
+                </Select>
+                <FormHelperText>You can filter these results by selecting a subscription.</FormHelperText>
+            </FormControl>
+        </form>
     );
 }
 
-
-export default withStyles(styles)(SubscriptionFilter);
+export default SubscriptionFilter

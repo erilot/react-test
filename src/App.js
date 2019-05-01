@@ -5,19 +5,15 @@ import axios from 'axios';
 import * as _ from 'lodash';
 import { Subscription } from './models/subscription';
 import LinearIndeterminate from './components/loaders/linear-indeterminate';
-import { CssBaseline, Toolbar } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { Product } from './models/product';
-import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles } from '@material-ui/core/styles';
+import SubscriptionFilter from './components/finder/SubscriptionFilter';
+import ProductFilter from './components/finder/productFilter';
 
-const drawerWidth = 240;
+const drawerWidth = 320;
 
 const styles = theme => ({
   root: {
@@ -35,25 +31,17 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
 });
 
 
 function App(props) {
+
   const { classes } = props;
-
   const [loadingCount, setLoadingCount] = useState(0);
-
-  const [subscriptions, setSubscriptions] = useState([]);
-  const [selectedSubscription, selectSubscription] = useState(null);
-
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, selectProduct] = useState(null);
-
-  /////
-
+  
   const [store, setStore] = useState(
     {
       subscriptions: [],
@@ -61,7 +49,12 @@ function App(props) {
     }
   );
 
-  // const [activeStore, setActiveStore]
+  const [selected, setSelected] = useState(
+    {
+      subscription: {id:null},
+      product: {id:null}
+    });
+  
 
 
 
@@ -71,6 +64,7 @@ function App(props) {
       const subscriptionUrl = 'https://releases.teradici.com/jsonapi/taxonomy_term/teradici_subscriptions?include=field_logo';
       const response = await axios(subscriptionUrl);
 
+      const subscriptions = [];
       _.forEach(response.data.data, s => { return subscriptions.push(new Subscription(s, response.data.included)) })
       setStore(store => ({ ...store, subscriptions: subscriptions }));
       setLoadingCount(loadingCount - 1);
@@ -82,8 +76,11 @@ function App(props) {
     async function getProducts() {
       const productUrl = 'http://releases.teradici.com/jsonapi/taxonomy_term/teradici_toplevel_products';
       const response = await axios(productUrl);
+      const products = [];
+
       _.forEach(response.data.data, p => { return products.push(new Product(p, response.data.included)) })
 
+      // products = _.sortBy(products, ['weight']);
       setStore(store => ({ ...store, products: products }));
       setLoadingCount(loadingCount - 1);
 
@@ -92,19 +89,18 @@ function App(props) {
   }, []);
 
   function resolveSubscription(e, id) {
-    selectSubscription(_.find(subscriptions, ['id', id]));
+    setSelected({ ...selected, subscription: _.find(store.subscriptions, ['id', id]) || {} });
   };
 
   function resolveProduct(e, id) {
-    selectProduct(_.find(products, ['id', id]));
-    console.log('product selected:', selectedProduct);
-  }
+    setSelected({ ...selected, product: _.find(store.products, ['id', id]) || {} });
+  };
 
   return (
 
     <div className={classes.root}>
       <CssBaseline >
-        <NavBar classes={classes} title={'Teradici McGee'}></NavBar>
+        <NavBar classes={classes} title={'Teradici Documents and Downloads'}></NavBar>
 
         {loadingCount > 0 &&
           <LinearIndeterminate color="secondary" />
@@ -118,33 +114,25 @@ function App(props) {
           }}
         >
           <div className={classes.toolbar} />
-          <Typography variant="h3">{loadingCount}</Typography>
+          {/* <Typography variant="h3">{loadingCount}</Typography> */}
 
-          {store.subscriptions && <List>
-            {store.subscriptions.map((sub, index) => (
-              <ListItem button key={sub.id}>
-                {/* <ListItemIcon>&nbsp;</ListItemIcon> */}
-                <ListItemText primary={sub.title} />
-              </ListItem>
-            ))}
-          </List>
-          }
+          {store.subscriptions && <SubscriptionFilter
+            subscriptions={store.subscriptions}
+            selected={selected.subscription}
+            setSubscription={resolveSubscription}
+            />}
+          
           <Divider />
-          {store.products && <List>
-            {store.products.map((product, index) => (
-              <ListItem button key={product.id}>
-                {/* <ListItemIcon>&nbsp;</ListItemIcon> */}
-                <ListItemText primary={product.title} />
-              </ListItem>
-            ))}
-          </List>
-          }
+
+          {store.products && <ProductFilter
+            products={store.products}
+            selected={selected}
+            setProduct={resolveProduct}
+          />}
+
 
         </Drawer>
-        <ContentBody
-          subscriptions={{ subscriptions: subscriptions, resolveSubscription: resolveSubscription, selectedSubscription: selectedSubscription }}
-          products={{ products: products, resolveProduct: resolveProduct, selectedProduct: selectedProduct }}>
-        </ContentBody>
+        <ContentBody store={store} selected={selected}/>
       </CssBaseline>
     </div>
   );
