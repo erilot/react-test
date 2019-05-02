@@ -4,7 +4,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import linearIndeterminate from '../loaders/linear-indeterminate';
+import LinearIndeterminate from '../loaders/LinearIndeterminate';
+import TeradiciLogoLarge from '../atomic/images/TeradiciLogoLarge';
 
 const NavBar = (props) => {
     const { classes } = props;
@@ -26,6 +27,7 @@ const NavBar = (props) => {
                     {props.title}
                 </Typography>
             </Toolbar>
+            { props.loadingCount > 0 && <LinearIndeterminate/>}
         </AppBar>
     )
 }

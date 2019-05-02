@@ -15,7 +15,6 @@ const styles = theme => ({
 });
 
 function LinearIndeterminate(props) {
-  const { classes } = props;
   return (
     <div className={styles.loader}>
       <LinearProgress color="secondary"/>

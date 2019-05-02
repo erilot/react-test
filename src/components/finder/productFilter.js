@@ -23,7 +23,8 @@ function ProductFilter(props) {
     return (filteredProducts && <List>
         {filteredProducts.map((product, index) => (
             <Fade in={true} key={product.id}>
-                <ListItem button key={product.id}
+                <ListItem button disableRipple 
+                    key={product.id} 
                     onClick={(e, x) => { setProduct(e, product.id) }}
                 >
                     <ListItemText primary={product.title} />

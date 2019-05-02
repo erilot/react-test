@@ -4,14 +4,14 @@ import ContentBody from './components/ContentBody';
 import axios from 'axios';
 import * as _ from 'lodash';
 import { Subscription } from './models/subscription';
-import LinearIndeterminate from './components/loaders/linear-indeterminate';
+import LinearIndeterminate from './components/loaders/LinearIndeterminate';
 import { CssBaseline } from '@material-ui/core';
 import { Product } from './models/product';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
 import SubscriptionFilter from './components/finder/SubscriptionFilter';
-import ProductFilter from './components/finder/productFilter';
+import ProductFilter from './components/finder/ProductFilter';
 
 const drawerWidth = 320;
 
@@ -21,6 +21,7 @@ const styles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
+    position: 'fixed',
   },
   drawer: {
     width: drawerWidth,
@@ -55,11 +56,23 @@ function App(props) {
       product: {id:null}
     });
   
+    let loaders = 0;
 
+    function incrementLoadingCount(){
+      loaders++;
+      setLoadingCount(loaders);
+    }
 
+    function decrementLoadingCount(){
+      loaders--;
+      setLoadingCount(loaders);
+    }
+
+    
 
   useEffect(() => {
-    setLoadingCount(loadingCount + 1);
+
+    incrementLoadingCount();    
     async function getSubscriptions() {
       const subscriptionUrl = 'https://releases.teradici.com/jsonapi/taxonomy_term/teradici_subscriptions?include=field_logo';
       const response = await axios(subscriptionUrl);
@@ -67,12 +80,11 @@ function App(props) {
       const subscriptions = [];
       _.forEach(response.data.data, s => { return subscriptions.push(new Subscription(s, response.data.included)) })
       setStore(store => ({ ...store, subscriptions: subscriptions }));
-      setLoadingCount(loadingCount - 1);
+      decrementLoadingCount();
     }
     getSubscriptions();
 
-    setLoadingCount(loadingCount + 1);
-
+    incrementLoadingCount();
     async function getProducts() {
       const productUrl = 'http://releases.teradici.com/jsonapi/taxonomy_term/teradici_toplevel_products';
       const response = await axios(productUrl);
@@ -80,10 +92,8 @@ function App(props) {
 
       _.forEach(response.data.data, p => { return products.push(new Product(p, response.data.included)) })
 
-      // products = _.sortBy(products, ['weight']);
       setStore(store => ({ ...store, products: products }));
-      setLoadingCount(loadingCount - 1);
-
+      decrementLoadingCount()
     }
     getProducts();
   }, []);
@@ -100,7 +110,7 @@ function App(props) {
 
     <div className={classes.root}>
       <CssBaseline >
-        <NavBar classes={classes} title={'Teradici Documents and Downloads'}></NavBar>
+        <NavBar classes={classes} title={'Teradici Documents and Downloads'} loadingCount={loadingCount}></NavBar>
 
         {loadingCount > 0 &&
           <LinearIndeterminate color="secondary" />
@@ -132,29 +142,10 @@ function App(props) {
 
 
         </Drawer>
-        <ContentBody store={store} selected={selected}/>
+        <ContentBody store={store} selected={selected} loadingCount={loadingCount}/>
       </CssBaseline>
     </div>
   );
 }
 
 export default withStyles(styles)(App);
-
-//   return (
-//     <React.Fragment>
-//       <CssBaseline>
-//         <NavBar title="Teradici" />
-//         {loadingCount > 0 &&
-//           <LinearIndeterminate color="secondary" />
-//         }
-//         <ContentBody
-//           subscriptions={{ subscriptions: subscriptions, resolveSubscription: resolveSubscription, selectedSubscription: selectedSubscription }}
-//           products={{ products: products, resolveProduct: resolveProduct, selectedProduct: selectedProduct }}>
-//         </ContentBody>
-//       </CssBaseline>
-//     </React.Fragment>
-//   );
-
-// }
-
-// export default App;
