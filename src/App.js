@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from './components/navs/NavBar';
-import ContentBody from './components/ContentBody';
+import ProductPage from './components/ProductPage';
 import axios from 'axios';
 import * as _ from 'lodash';
 import { Subscription } from './models/subscription';
@@ -42,7 +42,7 @@ function App(props) {
 
   const { classes } = props;
   const [loadingCount, setLoadingCount] = useState(0);
-  
+
   const [store, setStore] = useState(
     {
       subscriptions: [],
@@ -52,27 +52,27 @@ function App(props) {
 
   const [selected, setSelected] = useState(
     {
-      subscription: {id:null},
-      product: {id:null}
+      subscription: { id: null },
+      product: { id: null }
     });
-  
-    let loaders = 0;
 
-    function incrementLoadingCount(){
-      loaders++;
-      setLoadingCount(loaders);
-    }
+  let loaders = 0;
 
-    function decrementLoadingCount(){
-      loaders--;
-      setLoadingCount(loaders);
-    }
+  function incrementLoadingCount() {
+    loaders++;
+    setLoadingCount(loaders);
+  }
 
-    
+  function decrementLoadingCount() {
+    loaders--;
+    setLoadingCount(loaders);
+  }
+
+
 
   useEffect(() => {
 
-    incrementLoadingCount();    
+    incrementLoadingCount();
     async function getSubscriptions() {
       const subscriptionUrl = 'https://releases.teradici.com/jsonapi/taxonomy_term/teradici_subscriptions?include=field_logo';
       const response = await axios(subscriptionUrl);
@@ -130,8 +130,8 @@ function App(props) {
             subscriptions={store.subscriptions}
             selected={selected.subscription}
             setSubscription={resolveSubscription}
-            />}
-          
+          />}
+
           <Divider />
 
           {store.products && <ProductFilter
@@ -142,7 +142,8 @@ function App(props) {
 
 
         </Drawer>
-        <ContentBody store={store} selected={selected} loadingCount={loadingCount}/>
+        <ProductPage store={store} selected={selected} loadingState={
+          { loadingCount: loadingCount, incrementLoader: incrementLoadingCount, decrementLoader: decrementLoadingCount }} />
       </CssBaseline>
     </div>
   );

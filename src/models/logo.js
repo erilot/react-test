@@ -5,6 +5,6 @@ export class Logo {
         this.id = i.id;
         this.fileMime = i.attributes.filemime;
         this.fileName = i.attributes.filename;
-        this.uri = i.attributes.uri.url;
+        this.url = 'https:releases.teradici.com' + i.attributes.uri.url;
     }
 }

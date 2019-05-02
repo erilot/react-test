@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/styles';
 import * as _ from 'lodash';
-import { List, ListItem, ListItemText, Fade } from '@material-ui/core';
+import { List, ListItem, ListItemText, Divider } from '@material-ui/core';
+import Grow from '@material-ui/core/Grow';
+import Typography from '@material-ui/core/Typography';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 const styles = theme => ({
     root: {
@@ -10,28 +15,69 @@ const styles = theme => ({
     row: {}
 });
 
+
 function ProductFilter(props) {
     const { products, selected, setProduct } = props;
     const selectedSubscription = selected.subscription ? selected.subscription.id : null;
 
+    const [showEol, setShowEol] = useState(false);
+    const eolSwitchChange = name => event => {
+        setShowEol(event.target.checked);
+    }
 
     const filteredProducts = selectedSubscription ? _.filter(products, product => {
         return _.find(product.subscriptions, s => { return s === selectedSubscription });
     }) : products;
 
+    const liveProducts = _.filter(filteredProducts, ['isEol', false]);
+    const eolProducts = _.filter(filteredProducts, ['isEol', true]);
 
-    return (filteredProducts && <List>
-        {filteredProducts.map((product, index) => (
-            <Fade in={true} key={product.id}>
-                <ListItem button disableRipple 
-                    key={product.id} 
-                    onClick={(e, x) => { setProduct(e, product.id) }}
-                >
-                    <ListItemText primary={product.title} />
-                </ListItem>
-            </Fade>
-        ))}
-    </List>
+    return (filteredProducts &&
+        <List>
+            <Typography variant="overline">Products</Typography>
+
+            {liveProducts.map((product, index) => (
+                <Grow in={true} key={product.id}>
+                    <ListItem button disableRipple
+                        key={product.id}
+                        onClick={(e, x) => { setProduct(e, product.id) }}
+                    >
+                        <ListItemText primary={product.title} />
+                    </ListItem>
+                </Grow>
+            ))}
+            {eolProducts.length &&
+                <div>
+                    <List>
+                        <Divider />
+                        {showEol &&
+                            <div>
+                                <Typography variant="overline">Discontinued Products</Typography>
+                                {eolProducts.map((product, index) => (
+                                    <Grow in={true} key={product.id}>
+                                        <ListItem button disableRipple
+                                            key={product.id}
+                                            onClick={(e, x) => { setProduct(e, product.id) }}
+                                        >
+                                            <ListItemText primary={product.title} />
+                                        </ListItem>
+                                    </Grow>
+                                ))}
+                            </div>}
+                    </List>
+                    <Divider />
+                    <FormGroup row>
+                        <FormControlLabel
+                            control={
+                                <Switch checked={showEol} onChange={eolSwitchChange()} value="showEol" />
+                            }
+                            label="Show Discontinued"
+                        />
+                    </FormGroup>
+                </div>
+
+            }
+        </List>
     )
 }
 
