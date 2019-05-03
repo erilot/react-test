@@ -1,5 +1,4 @@
 function sortReleases(releases){
-    let pList = [];
    
     return releases.sort((a, b) => {
       // this is an ugly sort implementation, but does get the job done.

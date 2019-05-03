@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 export class ProductRelease {
 
-    constructor(i, inc) {
+    constructor(i, args) {
         // console.log('i:', i);
 
         const newComponentReleases = _.map(i.relationships.field_component_releases.data, cr => {
@@ -23,6 +23,7 @@ export class ProductRelease {
 
         this.documents = _.map(i.relationships.field_teradici_document.data, d=>{return d.id});
         this.downloads = _.map(i.relationships.field_teradici_download.data, d=>{return d.id});
-        this.supportState = i.relationships.field_support_state.data.id;
+        this.supportState = _.find(args.store.supportStates, ['id', i.relationships.field_support_state.data.id]) || i.relationships.field_support_state.data.id;
+        // console.log('====>',this);
     }   
 }

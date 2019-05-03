@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import LinearIndeterminate from '../loaders/LinearIndeterminate';
-import TeradiciLogoLarge from '../atomic/images/TeradiciLogoLarge';
+// import TeradiciLogoLarge from '../atomic/images/TeradiciLogoLarge';
 
 const NavBar = (props) => {
     const { classes } = props;
