@@ -1,22 +1,16 @@
-import React, { useState } from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Container from "@material-ui/core/Container";
 import { makeStyles, Typography } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
+import Container from "@material-ui/core/Container";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import Fade from "@material-ui/core/Fade";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 import Axios from "axios";
-import { ProductRelease } from "../../models/ProductRelease";
-
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import { FormHelperText } from "@material-ui/core";
-
-import Divider from "@material-ui/core/Divider";
-
 import * as _ from "lodash";
+import React, { useState, useEffect } from "react";
+import { ProductRelease } from "../../models/ProductRelease";
 import groupReleases from "../../utilities/GroupReleases";
+import ReleaseFilter from "../../components/finder/ReleaseFilter";
+import SingleComponentPage from './SingleComponentPage';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,9 +35,13 @@ function ProductPage(props) {
 
   const product = selected.product;
 
-  if (product.id && productReleases[product.id] === undefined) {
-    console.log("gotta get it");
+  // Set initial state
+  useEffect(() => {
+    console.log('product changed:',selected.product);
+    setSelectedProductRelease({});
+  }, [selected.product.id]);
 
+  if (product.id && productReleases[product.id] === undefined) {
     // incrementLoadingCount();
     async function getProductReleases() {
       const urlBase = [
@@ -69,138 +67,80 @@ function ProductPage(props) {
       setProductReleases({ ...productReleases, [product.id]: groupedReleases });
 
       loadingState.decrementLoader();
-      console.log("=>productReleases:", productReleases);
+      // console.log("=>productReleases:", productReleases);
+
+      // Set initial state
+      setProductRelease(
+        groupedReleases.current || groupedReleases.beta || null
+      );
     }
     getProductReleases();
   }
 
-  const setProductRelease = (e, id) => {
-    const selected = _.find(productReleases[product.id].all, pr => {
-      return pr.id === id;
-    });
-    console.log("selected:", selected);
+  const setProductRelease = selected => {
     setSelectedProductRelease(selected);
   };
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <Container className={classes.root}>
-        {product.id && (
-          <Fade in={true}>
-            <Paper className={classes.paper}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h2">{product.title}</Typography>
-                </Grid>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={9}>
-                  <Typography
-                    variant="body2"
-                    dangerouslySetInnerHTML={{
-                      __html: product.description
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  Selected: {selected.id}
-                  {productReleases[product.id] && (
-                    <form className={classes.root}>
-                      <FormControl className={classes.formControl}>
-                        <Select
-                          // Initialize with either the selected ID or the current release ID for this product
-                          inputProps={{
-                            value:
-                              selectedProductRelease.id ||
-                              productReleases[product.id].current.id
-                          }}
-                          value={
-                            selectedProductRelease.id
-                              ? selectedProductRelease.id
-                              : ""
-                          }
-                          onChange={(e, item) => {
-                            setProductRelease(e, item.props.value);
-                          }}
-                        >
-                          {/* Beta releases */}
-                          {productReleases[product.id].beta.map(pr => {
-                            return (
-                              <MenuItem key={pr.id} value={pr.id}>
-                                <Typography variant="body1" color="secondary">
-                                  {pr.number} (beta)
-                                </Typography>
-                                <Divider />
-                              </MenuItem>
-                            );
-                          })}
-
-                          {/* Supported releases */}
-                          {productReleases[product.id].supported.map(pr => {
-                            return (
-                              <MenuItem key={pr.id} value={pr.id}>
-                                <Typography variant="body1">
-                                  {pr.number}
-                                </Typography>
-                                <Divider />
-                              </MenuItem>
-                            );
-                          })}
-
-                          {/* Unsupported releases */}
-                          {productReleases[product.id].unsupported.length && (
-                            <div>
-                              <Divider />
-                              <Typography
-                                variant="caption"
-                                color="textSecondary"
-                              >
-                                Unsupported releases
-                              </Typography>
-                              {productReleases[product.id].unsupported.map(
-                                pr => {
-                                  return (
-                                    <MenuItem key={pr.id} value={pr.id}>
-                                      <Typography variant="body1">
-                                        {pr.number}
-                                      </Typography>
-                                      <Divider />
-                                    </MenuItem>
-                                  );
-                                }
-                              )}
-                            </div>
-                          )}
-                        </Select>
-                        <FormHelperText>
-                          Choose a product release{" "}
-                        </FormHelperText>
-                      </FormControl>
-                    </form>
-                  )}
-                </Grid>
-              </Grid>
-            </Paper>
-          </Fade>
-        )}
-
-        {selectedProductRelease.id &&
-          (selectedProductRelease.supportState.isPreRelease ||
-            !selectedProductRelease.supportState.isSupported) && (
+      <CssBaseline>
+        <Container className={classes.root}>
+          {product.id && (
             <Fade in={true}>
-              <Grid container spacing={2} className={classes.row}>
-                <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                    <Typography variant="body1" color="textSecondary">
-                      {selectedProductRelease.supportState.shortDescription}
-                    </Typography>
-                  </Paper>
+              <Paper className={classes.paper}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Typography variant="h2">{product.title}</Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={9}>
+                    <Typography
+                      variant="body2"
+                      dangerouslySetInnerHTML={{
+                        __html: product.description
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    {productReleases[product.id] && (
+                      <ReleaseFilter
+                        classes={classes}
+                        parentEntity={product}
+                        releases={productReleases[product.id]}
+                        setSelectedRelease={setSelectedProductRelease}
+                      />
+                    )}
+                  </Grid>
+                </Grid>
+              </Paper>
             </Fade>
           )}
-      </Container>
+
+          {/* Display a status message for releases outside of GA or Technical Support */}
+          {selectedProductRelease.id &&
+            (selectedProductRelease.supportState.isPreRelease ||
+              !selectedProductRelease.supportState.isSupported) && (
+              <Fade in={true}>
+                <Grid container spacing={2} className={classes.row}>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <Typography variant="body1" color="error">
+                        {selectedProductRelease.supportState.shortDescription}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </Fade>
+            )}
+
+          {/* Products with a single component directly display that component info */}
+          {selectedProductRelease.id &&
+            selectedProductRelease.componentReleases.all.length === 1 && (
+              <SingleComponentPage productRelease={selectedProductRelease} product={selected.product} store={store}/>
+            )}
+        </Container>
+      </CssBaseline>
     </React.Fragment>
   );
 }

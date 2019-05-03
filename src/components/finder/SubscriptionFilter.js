@@ -80,7 +80,6 @@ function SubscriptionFilter(props) {
             </CardContent>
           </div>
         </Card>
-        <Divider />
       </MenuItem>
     );
   });

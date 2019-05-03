@@ -46,20 +46,21 @@ function ProductFilter(props) {
                     </ListItem>
                 </Grow>
             ))}
-            {eolProducts.length &&
+            {!!eolProducts.length &&
                 <div>
                     <List>
                         <Divider />
                         {showEol &&
                             <div>
-                                <Typography variant="overline">Discontinued Products</Typography>
+                                <Typography variant="overline" color="textSecondary">Discontinued Products</Typography>
                                 {eolProducts.map((product, index) => (
                                     <Grow in={true} key={product.id}>
                                         <ListItem button disableRipple
                                             key={product.id}
                                             onClick={(e, x) => { setProduct(e, product.id) }}
+                                            color="textSecondary"
                                         >
-                                            <ListItemText primary={product.title} />
+                                            <ListItemText primary={product.title} color="textSecondary"/>
                                         </ListItem>
                                     </Grow>
                                 ))}
@@ -72,6 +73,7 @@ function ProductFilter(props) {
                                 <Switch checked={showEol} onChange={eolSwitchChange()} value="showEol" />
                             }
                             label="Show Discontinued"
+                            color="textSecondary"
                         />
                     </FormGroup>
                 </div>
