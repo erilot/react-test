@@ -11,6 +11,7 @@ import { ProductRelease } from "../../models/ProductRelease";
 import groupReleases from "../../utilities/GroupReleases";
 import ReleaseFilter from "../../components/finder/ReleaseFilter";
 import SingleComponentPage from './SingleComponentPage';
+import ProductReleasesPage from "./components/ProductReleasesPage";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 
 function ProductPage(props) {
   const classes = useStyles();
-  const { loadingState, selected, store } = props;
+  const { loadingState, selected, store, setStore } = props;
 
   const [productReleases, setProductReleases] = useState({});
   const [selectedProductRelease, setSelectedProductRelease] = useState({});
@@ -37,7 +38,7 @@ function ProductPage(props) {
 
   // Set initial state
   useEffect(() => {
-    console.log('product changed:',selected.product);
+    console.log('product changed:', selected.product);
     setSelectedProductRelease({});
   }, [selected.product.id]);
 
@@ -135,10 +136,14 @@ function ProductPage(props) {
             )}
 
           {/* Products with a single component directly display that component info */}
-          {selectedProductRelease.id &&
-            selectedProductRelease.componentReleases.all.length === 1 && (
-              <SingleComponentPage productRelease={selectedProductRelease} product={selected.product} store={store}/>
-            )}
+          {selectedProductRelease.id && <ProductReleasesPage
+            productRelease={selectedProductRelease}
+            product={selected.product}
+            store={store}
+            setStore={setStore}
+            loadingState={loadingState}
+          />
+          }
         </Container>
       </CssBaseline>
     </React.Fragment>

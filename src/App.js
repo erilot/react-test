@@ -12,6 +12,7 @@ import { withStyles } from "@material-ui/core/styles";
 import SubscriptionFilter from "./components/finder/SubscriptionFilter";
 import ProductFilter from "./components/finder/ProductFilter";
 import { SupportState } from "./models/SupportState";
+import { Notice } from "./models/Notice";
 
 const drawerWidth = 320;
 
@@ -93,9 +94,13 @@ function App(props) {
     async function getProducts() {
       const productUrl =
         "http://releases.teradici.com/jsonapi/taxonomy_term/teradici_toplevel_products";
-      const response = await axios(productUrl);
+
+      const include = [];
+      include.push('field_related_notices');
+      const response = await axios(productUrl + '?include=' + include.join(','));
       const products = [];
 
+      _.map(_.filter(response.data.included,['type','node--notice']), note=>{ return new Notice(note)});
       _.forEach(response.data.data, p => {
         return products.push(new Product(p, response.data.included));
       });
@@ -180,6 +185,7 @@ function App(props) {
         </Drawer>
         <ProductPage
           store={store}
+          setStore = {setStore}
           selected={selected}
           loadingState={{
             loadingCount: loadingCount,
