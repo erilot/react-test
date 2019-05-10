@@ -4,10 +4,10 @@ import Paper from "@material-ui/core/Paper";
 import Axios from 'axios';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from "react";
-import ComponentRelease from "../../../models/ComponentRelease";
-import groupReleases from '../../../utilities/GroupReleases';
+import ComponentRelease from "../../../../../models/ComponentRelease";
+import groupReleases from '../../../../../utilities/GroupReleases';
 import SingleComponentPage from '../SingleComponentPage';
-import ProductComponent from '../../../models/ProductComponent';
+import ProductComponent from '../../../../../models/ProductComponent';
 
 function ProductReleasesPage(props) {
     const { classes, product, productRelease, store, setStore, loadingState } = props;

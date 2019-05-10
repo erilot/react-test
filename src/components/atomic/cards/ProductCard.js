@@ -42,7 +42,7 @@ function setCurrentProduct(e){
 }
 
 function ProductCard(props) {
-    const { classes, theme, product, selectedProduct } = props;
+    const { classes, theme, product, selected } = props;
     return (
         <Fade in={true}>
             <Card className={classes.card} >
@@ -51,7 +51,7 @@ function ProductCard(props) {
                         <CardContent className={classes.content}>
                             <Typography component="h5" variant="h5">
                                 {product.title}
-                                {product.selectedProduct && product.id === product.selectedProduct.id ? <p>(selected)</p> : ''}
+                                {product.selected && product.id === product.selected.id ? <p>(selected)</p> : ''}
                             </Typography>
                         </CardContent>
 

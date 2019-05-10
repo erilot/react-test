@@ -5,7 +5,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { FormHelperText, Typography } from "@material-ui/core";
-import Divider from "@material-ui/core/Divider";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -83,6 +82,7 @@ function SubscriptionFilter(props) {
       </MenuItem>
     );
   });
+
 
   return (
     <form className={classes.root}>

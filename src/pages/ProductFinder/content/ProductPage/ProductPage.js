@@ -1,22 +1,22 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Fade from "@material-ui/core/Fade";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Axios from "axios";
 import * as _ from "lodash";
 import React, { useState, useEffect } from "react";
-import { ProductRelease } from "../../models/ProductRelease";
-import groupReleases from "../../utilities/GroupReleases";
-import ReleaseFilter from "../../components/finder/ReleaseFilter";
+import { ProductRelease } from "../../../../models/ProductRelease";
+import groupReleases from "../../../../utilities/GroupReleases";
+import ReleaseFilter from "../../../../components/finder/ReleaseFilter";
 import SingleComponentPage from './SingleComponentPage';
 import ProductReleasesPage from "./components/ProductReleasesPage";
+import { withStyles } from "@material-ui/styles";
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   root: {
     marginTop: 64,
-    paddingTop: theme.spacing(3)
+    paddingTop: theme.spacing(3),
+    border: '5px solid green'
   },
   paper: {
     borderRadius: 0,
@@ -25,12 +25,11 @@ const useStyles = makeStyles(theme => ({
   row: {
     paddingTop: theme.spacing(2)
   }
-}));
+});
 
 function ProductPage(props) {
-  const classes = useStyles();
-  const { loadingState, selected, store, setStore } = props;
-
+  const { classes, loadingState, selected, store, setters } = props;
+  
   const [productReleases, setProductReleases] = useState({});
   const [selectedProductRelease, setSelectedProductRelease] = useState({});
 
@@ -42,49 +41,50 @@ function ProductPage(props) {
     setSelectedProductRelease({});
   }, [selected.product.id]);
 
-  if (product.id && productReleases[product.id] === undefined) {
-    // incrementLoadingCount();
-    async function getProductReleases() {
-      const urlBase = [
-        "https://releases.teradici.com/jsonapi/node/teradici_product_release"
-      ];
+  // if (product.id && productReleases[product.id] === undefined) {
+  //   // incrementLoadingCount();
+  //   async function getProductReleases() {
+  //     const urlBase = [
+  //       "https://releases.teradici.com/jsonapi/node/teradici_product_release"
+  //     ];
 
-      const urlTerms = [];
-      urlTerms.push("filter[a][condition][path]=field_in_product.id");
-      urlTerms.push("filter[a][condition][value]=" + product.id);
-      urlTerms.push("include=field_support_state");
+  //     const urlTerms = [];
+  //     urlTerms.push("filter[a][condition][path]=field_in_product.id");
+  //     urlTerms.push("filter[a][condition][value]=" + product.id);
+  //     urlTerms.push("include=field_support_state");
 
-      const url = urlBase + "?" + urlTerms.join("&");
-      loadingState.incrementLoader();
-      const response = await Axios(url);
+  //     const url = urlBase + "?" + urlTerms.join("&");
+  //     loadingState.incrementLoader();
+  //     const response = await Axios(url);
 
-      const prs = [];
-      _.forEach(response.data.data, pr => {
-        return prs.push(new ProductRelease(pr, { store: store }));
-      });
+  //     const prs = [];
+  //     _.forEach(response.data.data, pr => {
+  //       return prs.push(new ProductRelease(pr, { store: store }));
+  //     });
 
-      const groupedReleases = groupReleases(prs);
+  //     const groupedReleases = groupReleases(prs);
 
-      setProductReleases({ ...productReleases, [product.id]: groupedReleases });
+  //     setProductReleases({ ...productReleases, [product.id]: groupedReleases });
 
-      loadingState.decrementLoader();
-      // console.log("=>productReleases:", productReleases);
+  //     loadingState.decrementLoader();
+  //     // console.log("=>productReleases:", productReleases);
 
-      // Set initial state
-      setProductRelease(
-        groupedReleases.current || groupedReleases.beta || null
-      );
-    }
-    getProductReleases();
-  }
+  //     // Set initial state
+  //     setProductRelease(
+  //       groupedReleases.current || groupedReleases.beta || null
+  //     );
+  //   }
+  //   getProductReleases();
+  // }
 
-  const setProductRelease = selected => {
-    setSelectedProductRelease(selected);
-  };
+  // const setProductRelease = selected => {
+  //   setSelectedProductRelease(selected);
+  // };
+
+
 
   return (
     <React.Fragment>
-      <CssBaseline>
         <Container className={classes.root}>
           {product.id && (
             <Fade in={true}>
@@ -140,14 +140,13 @@ function ProductPage(props) {
             productRelease={selectedProductRelease}
             product={selected.product}
             store={store}
-            setStore={setStore}
+            setters={setters}
             loadingState={loadingState}
           />
           }
         </Container>
-      </CssBaseline>
     </React.Fragment>
   );
 }
 
-export default ProductPage;
+export default withStyles(styles)(ProductPage);
