@@ -2,6 +2,7 @@
 export class Product {
 
     constructor(i, includes) {
+    
         this.id = i.id;
         this.title = i.attributes.name;
         this.description = i.attributes.description ? i.attributes.description.value : '';

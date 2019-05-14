@@ -10,26 +10,21 @@ const drawerWidth = 320;
 
 const styles = theme => ({
   root: {
-    display: "flex"
   },
   drawer: {
-    width: drawerWidth,
-    flexShrink: 0
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
   },
   drawerPaper: {
-    width: drawerWidth
-  }
+    width: drawerWidth,
+    marginTop: 64,
+  },
 });
 
 function ProductDrawer(props) {
-  const { classes, store, selected, setters, container } = props;
-
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  function handleDrawerToggle() {
-    setMobileOpen(!mobileOpen);
-  }
-
+  const { store, selected, setters, container, mobile, classes } = props;
   const drawerContent = (
     <div>
       {store.subscriptions && (
@@ -57,10 +52,15 @@ function ProductDrawer(props) {
       <Hidden smUp implementation="css">
         <Drawer
           container={container}
+          variant="temporary"
           className={classes.drawer}
-          variant="fixed"
+          open={mobile.mobileOpen}
+          onClose={mobile.toggleDrawer}
           classes={{
             paper: classes.drawerPaper
+          }}
+          ModalProps={{
+            keepMounted: true
           }}
         >
           {drawerContent}

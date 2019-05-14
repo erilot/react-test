@@ -4,7 +4,7 @@ import { PublicFile } from './PublicFile';
 export class Eula {
 
     constructor(i, inc) {
-        console.log('i:',i,inc);
+        // console.log('i:',i,inc);
         this.id = i.id;
         this.title = i.attributes.title;
         this.body = i.attributes.body.value;

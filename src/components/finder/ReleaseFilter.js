@@ -4,13 +4,26 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Typography from "@material-ui/core/Typography";
-import React, { useState } from "react";
-import * as _ from "lodash";
+import React, { useState, useEffect } from "react";
+import _ from "lodash";
+import { withStyles } from "@material-ui/core";
+
+const styles = theme => ({
+  root: {}
+});
 
 function ReleaseFilter(props) {
-  const { classes, parentEntity, releases, setSelectedRelease } = props;
-
+  const { classes, releases, upstreamSelectedRelease, setSelectedRelease } = props;
   const [selected, setSelected] = useState({});
+
+ 
+  // Use the upstream selected release to keep the form in sync, deferring to the upstream value.
+  // This effectively forces the initial form state, rather than relying on the form to provide a default.
+  useEffect(()=>{
+    if(upstreamSelectedRelease !== selected.release) {
+      setSelected(upstreamSelectedRelease);
+    }
+  }, [upstreamSelectedRelease])
 
   function setRelease(e, id) {
     const selected = _.find(releases.all, ["id", id]);
@@ -46,7 +59,7 @@ function ReleaseFilter(props) {
             {releases.supported.map(pr => {
               return (
                 <MenuItem key={pr.id} value={pr.id}>
-                  <Typography variant="body1">{pr.number}</Typography>
+                  <Typography variant="h6">{pr.number}</Typography>
                 </MenuItem>
               );
             })}
@@ -78,4 +91,4 @@ function ReleaseFilter(props) {
   );
 }
 
-export default ReleaseFilter;
+export default withStyles(styles)(ReleaseFilter);

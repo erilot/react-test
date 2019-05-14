@@ -1,13 +1,13 @@
 import { Grid, Typography, List } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
-import Axios from 'axios';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from "react";
 import ComponentRelease from "../../../../../models/ComponentRelease";
 import groupReleases from '../../../../../utilities/GroupReleases';
 import SingleComponentPage from '../SingleComponentPage';
 import ProductComponent from '../../../../../models/ProductComponent';
+import axios from 'axios';
 
 function ProductReleasesPage(props) {
     const { classes, product, productRelease, store, setStore, loadingState } = props;
@@ -55,7 +55,7 @@ function ProductReleasesPage(props) {
             _.forEach(releases, cr => { filter.push('filter[a][condition][value][]=' + cr) });
             const url = urlBase + '?include=' + include.join(',') + '&' + filter.join("&");
 
-            const response = await Axios(url);
+            const response = await axios(url);
 
             const crs = [];
             console.log('included:',response.data.included);

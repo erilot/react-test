@@ -21,6 +21,7 @@ function ProductFilter(props) {
     const selectedSubscription = selected.subscription ? selected.subscription.id : null;
 
     const [showEol, setShowEol] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState({});
     const eolSwitchChange = name => event => {
         setShowEol(event.target.checked);
     }
@@ -32,15 +33,22 @@ function ProductFilter(props) {
     const liveProducts = _.filter(filteredProducts, ['isEol', false]);
     const eolProducts = _.filter(filteredProducts, ['isEol', true]);
 
+    function updateProductChange(e, id) {
+        const product = _.find(products,['id', id])
+        setSelectedProduct(product);
+        setProduct(product);
+    }
+
     return (filteredProducts &&
         <List>
             <Typography variant="overline">Products</Typography>
 
             {liveProducts.map((product, index) => (
                 <Grow in={true} key={product.id}>
-                    <ListItem button disableRipple
+                    <ListItem button
                         key={product.id}
-                        onClick={(e, x) => { setProduct(e, product.id) }}
+                        onClick={(e, x) => { updateProductChange(e, product.id) }}
+                        selected={selectedProduct.id === product.id}
                     >
                         <ListItemText primary={product.title} />
                     </ListItem>

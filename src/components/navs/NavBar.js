@@ -2,7 +2,7 @@ import React from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { IconButton } from "@material-ui/core";
+import { IconButton, Hidden } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import { withStyles } from "@material-ui/styles";
 import LinearLoader from "../loaders/LinearLoader";
@@ -13,32 +13,35 @@ const styles = theme => ({
     zIndex: theme.zIndex.drawer + 1,
     position: "fixed"
   },
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar,
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
 });
 
 const NavBar = props => {
-  const { classes, loaderManager } = props;
-  console.log("==>Navbar rendering", props);
+  const { classes, loaderManager, mobile } = props;
+  // console.log("==>Navbar rendering", props);
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar position="sticky" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
-        <IconButton
-          color="inherit"
-          aria-label="Open drawer"
-          //   onClick={this.handleDrawerToggle}
-          className={classes.menuButton}
-        >
-          <MenuIcon />
-        </IconButton>
+        <Hidden smUp>
+          <IconButton
+            color="inherit"
+            aria-label="Open drawer"
+            onClick={mobile.toggleDrawer}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Hidden>
         <Typography variant="h6" color="inherit" noWrap>
           {props.title}
         </Typography>
       </Toolbar>
-      {console.log(
-        "ls/navbar:",
-        loaderManager.loadingState.main,
-        loaderManager.loadingState.background
-      )}
       {loaderManager.loadingState.main > 0 && (
         <LinearLoader color={"primary"} />
       )}

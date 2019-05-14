@@ -3,11 +3,11 @@ import { withStyles } from "@material-ui/core";
 import NavBar from "../../components/navs/NavBar";
 import ProductDrawer from "./navigation/ProductDrawer";
 import { Subscription } from "../../models/Subscription";
-import axios from 'axios';
+import axios from "axios";
 import { Notice } from "../../models/Notice";
 import { Product } from "../../models/Product";
 import { SupportState } from "../../models/SupportState";
-import _ from 'lodash';
+import _ from "lodash";
 import ProductPage from "./content/ProductPage/ProductPage";
 
 const styles = theme => ({});
@@ -15,6 +15,20 @@ const styles = theme => ({});
 function ProductFinderLayout(props) {
   const { loaderManager } = props;
 
+  // UI sizes
+  const uiSizes = {
+    drawerWidth: 330,
+    appBarHeight: 64
+  };
+
+  // Mobile state
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  function handleDrawerToggle() {
+    setMobileOpen(!mobileOpen);
+  }
+
+  // Global store
   const [store, setStore] = useState({
     subscriptions: [],
     products: [],
@@ -62,14 +76,17 @@ function ProductFinderLayout(props) {
       );
       const products = [];
 
-      _.map(
+      const notices = _.map(
         _.filter(response.data.included, ["type", "node--notice"]),
-        note => {
-          return new Notice(note);
+        n => {
+          return new Notice(n);
         }
       );
+
+      setStore(store => ({ ...store, notices: notices }));
+
       _.forEach(response.data.data, p => {
-        return products.push(new Product(p, response.data.included));
+        return products.push(new Product(p));
       });
 
       setStore(store => ({ ...store, products: products }));
@@ -97,30 +114,49 @@ function ProductFinderLayout(props) {
 
   // Subscription selection setter. Pass this as props to child components as needed.
   const setters = {
-      resolveSubscription: (e,id) => {
-        setSelected({
-            ...selected,
-            subscription: _.find(store.subscriptions, ["id", id]) || {}
-          });
-          // console.log('Set subscription:', _.find(store.subscriptions, ["id", id]))
-      },
-      resolveProduct: (e,id) => {
-        setSelected({
-            ...selected,
-            product: _.find(store.products, ["id", id]) || {}
-          });
-          console.log('Set product:', _.find(store.products, ["id", id]) || {})
-      }
-  }
+    resolveSubscription: (e, id) => {
+      setSelected({
+        ...selected,
+        subscription: _.find(store.subscriptions, ["id", id]) || {}
+      });
+      // console.log('Set subscription:', _.find(store.subscriptions, ["id", id]))
+    },
+    resolveProduct: (product) => {
+      setSelected({
+        ...selected,
+        product: product || {}
+      });
+    }
+  };
+
+  const mobileHandler = {
+    mobileOpen: mobileOpen,
+    toggleDrawer: handleDrawerToggle
+  };
 
   return (
     <React.Fragment>
       <NavBar
         title={"Teradici Documents and Downloads"}
         loaderManager={loaderManager}
+        mobile={mobileHandler}
       />
-      <ProductDrawer loaderManager={loaderManager} setters={setters} store={store} selected={selected}/>
-      <ProductPage loaderManager={loaderManager} setters={setters} store={store} selected={selected}/>
+      <ProductDrawer
+        loaderManager={loaderManager}
+        setters={setters}
+        store={store}
+        selected={selected}
+        mobile={mobileHandler}
+        uiSizes={uiSizes}
+      />
+      <ProductPage
+        loaderManager={loaderManager}
+        setters={setters}
+        store={store}
+        selected={selected}
+        mobile={mobileHandler}
+        uiSizes={uiSizes}
+      />
     </React.Fragment>
   );
 }
