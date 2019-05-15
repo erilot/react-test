@@ -14,13 +14,12 @@ import CardContent from "@material-ui/core/CardContent";
 import Chip from "@material-ui/core/Chip";
 import Link from "@material-ui/core/Link";
 import Button from "@material-ui/core/Button";
-import Badge from '@material-ui/core/Badge';
+import Badge from "@material-ui/core/Badge";
+import ComponentReleaseView2 from "./ComponentReleaseView2";
 
 const styles = theme => ({
-  paper: {
-    borderRadius: 0,
+  row: {
     marginTop: theme.spacing(2),
-    padding: theme.spacing(2)
   },
   card: {
     borderRadius: 0,
@@ -35,10 +34,7 @@ const styles = theme => ({
     marginBottom: theme.spacing(1),
     textTransform: "none"
   },
-  badge: {
-      top: '50%',
-      right: -3,
-  }
+
 });
 
 function ProductReleaseView(props) {
@@ -134,9 +130,10 @@ function ProductReleaseView(props) {
   }
 
   return (
-    <Paper className={classes.paper}>
+    // <Paper className={classes.paper}>
+    <div className={classes.row}>
       <Grid container spacing={2}>
-        {components.length > 1 && (
+        {/* {components.length > 1 && (
           <Grid item xs={12} md={3}>
             {components.map(c => {
               return (
@@ -148,14 +145,7 @@ function ProductReleaseView(props) {
                     }}
                   >
                     <CardContent className={classes.cardContent}>
-                    {/* <Badge color="primary" className={classes.badge} badgeContent={c.componentReleases.current.number}> */}
                       <Typography variant="body2">{c.title}</Typography>
-                      {/* </Badge> */}
-                      {/* <Chip
-                        color="primary"
-                        variant="outlined"
-                        label={c.componentReleases.current.number}
-                      /> */}
                       
                     </CardContent>
                   </CardActionArea>
@@ -163,8 +153,16 @@ function ProductReleaseView(props) {
               );
             })}
           </Grid>
-        )}
-        <Grid item xs={12} md={components.length === 1 ? 12 : 9}>
+        )} */}
+        <Grid item xs={12}>
+          <ComponentReleaseView2
+            components={components}
+            selectedComponent={selectedComponent}
+            selectedComponentRelease={selectedComponentRelease}
+          />
+        </Grid>
+
+        {/* <Grid item xs={12} md={components.length === 1 ? 12 : 9}>
           {components.length > 1 && (
             <Grid container spacing={2}>
               <Grid item>
@@ -218,9 +216,10 @@ function ProductReleaseView(props) {
             </Grid>
 
           </Grid>
-        </Grid>
+        </Grid> */}
       </Grid>
-    </Paper>
+    </div>
+    // </Paper>
   );
 }
 
